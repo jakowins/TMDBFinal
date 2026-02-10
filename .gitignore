@@ -1,5 +1,3 @@
 env
-FastAPI.py
-movie_model.pkl
-movies_GradientBoost(get_connection).py
+
 

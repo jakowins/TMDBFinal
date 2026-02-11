@@ -65,7 +65,7 @@ class Question(BaseModel):
 
 # modelo Hugging Face 
 
-HF_TOKEN = os.getenv("HF_TOKEN") #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  
+HF_TOKEN = os.getenv("HF_TOKEN")  
 SQL_MODEL_ID = "defog/sqlcoder-7b-2"
 TEXT_MODEL_ID = "tiiuae/falcon-7b-instruct"
 
@@ -124,17 +124,17 @@ TABLE movies (
 
 
 # endpoint /predict
-
+@app.get("/")
+def bienvenido():
+    return "Bienvenido a nuestra FastAPI de pelis!"
+    
 @app.post("/predict")
 def predict_movie(movie: MovieInput):
     if gb_model is None:
         raise HTTPException(status_code=500, detail="Modelo no cargado")
 
     # features numéricas
-    X_num = np.array([[movie.budget,
-                       movie.runtime,
-                       movie.popularity,
-                       movie.vote_count,
+    X_num = np.array([[movie.runtime,
                        movie.release_year,
                        int(movie.adult),
                        int(movie.video)]], dtype=float)
@@ -176,7 +176,9 @@ def ask_text(question: Question) -> str:
     {question.text}
     Limita resultados a 50 filas.
     """
-    respuesta_sql = generar_sql(prompt).strip()
+    # HF genera SQL
+    respuesta_sql = generar_sql(prompt).strip() 
+    
     sql_lower = respuesta_sql.lower()
     forbidden = ["insert", "update", "delete", "drop", "alter", "truncate", "create", "grant", "revoke"]
 
@@ -193,6 +195,7 @@ def ask_text(question: Question) -> str:
     Pregunta: {question.text}
     Datos encontrados: {df.head(10).to_dict(orient='records')}
     """
+    # HF genera la respuesta final
     respuesta_final = generar_texto(prompt_respuesta).strip()
     return respuesta_final
 
@@ -206,7 +209,9 @@ def ask_visual(question: Question) -> StreamingResponse:
     {sql_schema}
     Pregunta: {question.text}
     """
+    # HF genera SQL y tipo de gráfico
     respuesta = generar_sql(prompt_graficos).strip()
+    
     lines = respuesta.splitlines()
     if len(lines) < 2:
         raise HTTPException(400, "Respuesta inválida del modelo")

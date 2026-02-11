@@ -50,14 +50,12 @@ class MovieInput(BaseModel):
     title: str
     overview: str = ""
     tagline: str = ""
-    budget: float
     runtime: float
-    popularity: float
-    vote_count: int
     release_year: int
     adult: bool
     video: bool
     genres: list[str] = []
+
 
 class Question(BaseModel):
     text: str

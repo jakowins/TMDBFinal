@@ -50,7 +50,10 @@ class MovieInput(BaseModel):
     title: str
     overview: str = ""
     tagline: str = ""
+    budget: float
     runtime: float
+    popularity: float
+    vote_count: int
     release_year: int
     adult: bool
     video: bool
@@ -132,7 +135,10 @@ def predict_movie(movie: MovieInput):
         raise HTTPException(status_code=500, detail="Modelo no cargado")
 
     # features numéricas
-    X_num = np.array([[movie.runtime,
+    X_num = np.array([[movie.budget,
+                       movie.runtime,
+                       movie.popularity,
+                       movie.vote_count,
                        movie.release_year,
                        int(movie.adult),
                        int(movie.video)]], dtype=float)
